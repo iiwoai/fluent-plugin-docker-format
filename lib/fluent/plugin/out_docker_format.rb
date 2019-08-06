@@ -74,12 +74,23 @@ module Fluent
       end
       image_name
     end
-
+    
+    def get_hostname(id)
+      @id_to_docker_cfg[id] = get_docker_cfg_from_id(id) unless @id_to_docker_cfg.has_key? id
+      if @id_to_docker_cfg[id] == nil 
+        hostname = nil
+      else 
+        hostname = @id_to_docker_cfg[id]['Config']['Hostname'].dup
+      end
+      hostname
+    end
+    
     def format_record(tag, record)
       id = interpolate(tag, @container_id)
       record['container_id'] = id
       record['container_name'] = get_container_name(id) || "<unknown>"
       record['image_name'] = get_image_name(id) || "<unknown>"
+      record['hostname'] = get_hostname(id) || "<unknown>"
       record
     end
 
